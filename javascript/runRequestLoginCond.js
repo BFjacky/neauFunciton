@@ -33,7 +33,7 @@ module.exports = function runRequestLoginCond(stu) {
             //请求与该cookie 绑定的 captcha
             const imageReq = http.request(imageOptions, (imageRes) => {
                 imageRes.on('data', (chunk) => {
-                    fs.writeFileSync(path.join(__dirname, '../', 'resource', '/captcha.jpg'), chunk);
+                    fs.writeFileSync(path.join(__dirname, '../', 'public', 'js','/captcha.jpg'), chunk);
                 });
                 imageRes.on('end', () => {
                     resolve('nothing');
