@@ -7,49 +7,51 @@ const Student = require('./javascript/Student.js');
 const tryLogin = require('./javascript/TryLogin.js');
 const runGetScore = require('./javascript/runGetScore.js');
 const runGetSchedule = require('./javascript/runGetSchedule.js');
-const runCheckCookie = require('./webServer/checkCookie.js')
-
+const USmongo = require('./persistence/USmongo.js')
+const cookieParser = require('cookie-parser')
+const getNewCookie = require('./webServer/getNewCookie.js')
+const cookieIsAble = require('./webServer/CookieisAble.js')
 const app = express();
 //新建一个Student对象
 let stu = new Student();
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 
 app.get('/', function (req, res) {
-    res.send('main html')
+    let randomStr = Math.random().toString(36).substring(2, 20);
+    // res.cookie('feisweb',randomStr)
+    res.send(req.cookies);
 })
-app.get('/login', function (req, res) {
-    //返回首页
-    let html = '';
+app.get('/login', async function (req, res) {
 
-    runRequestLoginCond(stu).then(function (data) {
-        //检查浏览器的cookie
-        runCheckCookie(req, res, stu.cookie).then(
-            function (data) {
-                let SchoolCookie = data;
-                if (SchoolCookie != '') {
-                    console.log('数据库中cookie', SchoolCookie);
-                    stu.cookie = SchoolCookie;
-                    res.writeHead(302, {
-                        'Location': '/main'
-                    });
-                    res.end();
-                }
-                else {
-                    fs.readFile(path.join(__dirname, 'public', '/html', '/login.html'), (err, data) => {
-                        if (err) {
-                            throw err
-                        }
-                        else {
-                            html = data;
-                        }
-                        res.end(html);
-                    })
-                }
-            }
-        );
+    //用req.cookies来检查数据库
+    let flag = await cookieIsAble(req.cookies.feisweb)
+
+    //检查到了并且可用
+    if (flag[0] !== -1) {
+        stu.cookie = flag[1];
+        res.writeHead(302, {
+            'Location': '/main'
+        });
+        res.end();
+    }
+
+    //无可用cookie，绑定新cookie   
+    let cookies = await getNewCookie()
+    res.cookie('feisweb', cookies[1])
+    stu.setCookie(cookies[0]);
+
+    fs.readFile(path.join(__dirname, 'public', '/html', '/login.html'), (err, data) => {
+        if (err) {
+            throw err
+        }
+        else {
+            res.end(data);
+        }
     })
 })
+
 
 app.use('/tryLogin', function (req, res) {
     let html = '';

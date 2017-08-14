@@ -1,10 +1,10 @@
 const userSession = require('../models/userSession.js');
 
-let USmongo = function(){
+let USmongo = function () {
 
 }
 
-USmongo.prototype.insert=function (sessionId, neauSessionId) {
+USmongo.prototype.insert = function (sessionId, neauSessionId) {
     let p = new Promise(function (resolve, reject) {
         let userSe = new userSession(
             {
@@ -19,7 +19,6 @@ USmongo.prototype.insert=function (sessionId, neauSessionId) {
                 rejcet(err)
             }
             else {
-                console.log("Res:" + res);
                 resolve(res);
             }
 
@@ -37,7 +36,6 @@ USmongo.prototype.del = function (sessionId) {
                 reject(err);
             }
             else {
-                console.log('res: ' + res)
                 resolve(res);
             }
         })
@@ -57,7 +55,6 @@ USmongo.prototype.update = function (sessionId, neauSessionId) {
                 reject(err)
             }
             else {
-                console.log('res' + res)
                 resolve(res);
             }
         })
@@ -66,4 +63,20 @@ USmongo.prototype.update = function (sessionId, neauSessionId) {
     return p;
 }
 
+USmongo.prototype.query = function (sessionId) {
+    let p = new Promise(function (resolve, reject) {
+        let whereStr = { sessionId: sessionId }
+        userSession.find(whereStr, function (err, res) {
+            if (err) {
+                console.log('err: ' + err)
+                reject(err);
+            }
+            else {
+                resolve(res);
+            }
+        })
+
+    })
+    return p;
+}
 module.exports = USmongo;
