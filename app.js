@@ -34,6 +34,7 @@ app.get('/login', async function (req, res) {
         });
         res.end();
     }
+    
     //无可用cookie，绑定新cookie   
     let cookies = await getNewCookie()
     res.cookie('feisweb', cookies[1])

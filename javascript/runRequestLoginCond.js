@@ -29,12 +29,19 @@ module.exports = function runRequestLoginCond() {
                 }
             };
 
+
             //请求与该cookie 绑定的 captcha
             const imageReq = http.request(imageOptions, (imageRes) => {
+                let chunks = [];
+                let length = 0;
                 imageRes.on('data', (chunk) => {
-                    fs.writeFileSync(path.join(__dirname, '../', 'public', 'js', '/captcha.jpg'), chunk);
+                    chunks.push(chunk);
+                    length += chunk.length;
                 });
                 imageRes.on('end', () => {
+                    data = new Buffer(length);
+                    data = Buffer.concat(chunks, length)
+                    fs.writeFileSync(path.join(__dirname, '../', 'public', 'js', '/captcha.jpg'), data);
                     resolve(cookie);
                 });
             });
