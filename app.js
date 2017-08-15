@@ -24,10 +24,8 @@ app.get('/', function (req, res) {
     res.send(req.cookies);
 })
 app.get('/login', async function (req, res) {
-
     //用req.cookies来检查数据库
     let flag = await cookieIsAble(req.cookies.feisweb)
-
     //检查到了并且可用
     if (flag[0] !== -1) {
         stu.cookie = flag[1];
@@ -36,7 +34,6 @@ app.get('/login', async function (req, res) {
         });
         res.end();
     }
-
     //无可用cookie，绑定新cookie   
     let cookies = await getNewCookie()
     res.cookie('feisweb', cookies[1])
@@ -90,6 +87,7 @@ app.use('/tryLogin', function (req, res) {
         )
     })
 })
+//
 
 app.get('/main', function (req, res) {
     console.log('请求了main页面');
@@ -107,7 +105,7 @@ app.get('/main', function (req, res) {
     })
 })
 
-app.get('/index', function (req, res) {
+app.get('/main/Sche_Score', function (req, res) {
     console.log('请求了index页面');
     let html = ''
     fs.readFile(path.join(__dirname, 'public', '/html', '/index.html'), (err, data) => {
@@ -152,6 +150,7 @@ app.get('/getScore', function (req, res) {
         console.log(err);
     });
 })
+
 app.listen(3000, function () {
     console.log('listening 3000...')
 })
