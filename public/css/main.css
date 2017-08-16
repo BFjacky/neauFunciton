@@ -6,7 +6,7 @@ body{
     margin:0;
     padding: 0;
     height: 100vh;
-    background-image: url(/img/003.jpg); 
+    background-color: #383838;
     background-size: 100%;
     
 }
@@ -52,18 +52,18 @@ button:active{
     top:2px;
 }
 #button1{
-       background-image: url(/img/006.jpg); 
+      background-color: #1E1E1E;
     background-size: 100%;
 }
 #button2{
-       background-image: url(/img/010.jpg); 
+       background-color: #1E1E1E;
     background-size: 100%;
 }
 #button3{
-       background-image: url(/img/008.jpg); 
+      background-color: #1E1E1E;
     background-size: 100%;
 }
 #button4{
-       background-image: url(/img/009.jpg); 
+       background-color: #1E1E1E;
     background-size: 100%;
 }

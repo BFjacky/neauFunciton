@@ -12,7 +12,6 @@ const cookieParser = require('cookie-parser')
 const getNewCookie = require('./webServer/getNewCookie.js')
 const cookieIsAble = require('./webServer/CookieisAble.js')
 const auth = require('./midwares/auth.js')
-const midLogin = require('./midwares/midLogin')
 const midTryLogin = require('./midwares/midTryLogin.js')
 const myUSmongo = new USmongo()
 const app = express();
@@ -26,20 +25,27 @@ app.get('/', function (req, res) {
     // res.cookie('feisweb',randomStr)
     res.send(req.cookies);
 })
-app.get('/login', midLogin,
+app.get('/login', auth,
     async function (req, res) {
-        fs.readFile(path.join(__dirname, './', 'public', '/html', '/login.html'), (err, data) => {
-            console.log('33333333333333333333')
-            if (err) {
-                throw err
-            }
-            else {
-                res.end(data);
-            }
-        })
+        if (req.flag) {
+            res.writeHead(302, {
+                'Location': '/main'
+            });
+            res.end();
+        }
+        else {
+            fs.readFile(path.join(__dirname, './', 'public', '/html', '/login.html'), (err, data) => {
+                console.log('33333333333333333333')
+                if (err) {
+                    throw err
+                }
+                else {
+                    res.end(data);
+                }
+            })
+        }
     },
 )
-
 
 app.use('/tryLogin', midTryLogin, function (req, res) {
     let html = '';
@@ -98,19 +104,26 @@ app.get('/main', function (req, res) {
 })
 
 app.get('/main/Sche_Score', auth, function (req, res) {
-    console.log('请求了index页面');
-    let html = ''
-    fs.readFile(path.join(__dirname, 'public', '/html', '/index.html'), (err, data) => {
-        console.log('正在读取文件')
-        if (err) {
-            throw err
-        }
-        else {
-            html = data;
-        }
-        res.end(html);
-
-    })
+    if (req.flag) {
+        console.log('请求了index页面');
+        let html = ''
+        fs.readFile(path.join(__dirname, 'public', '/html', '/index.html'), (err, data) => {
+            console.log('正在读取文件')
+            if (err) {
+                throw err
+            }
+            else {
+                html = data;
+            }
+            res.end(html);
+        })
+    }
+    else {
+        res.writeHead(302, {
+            'Location': '/login'
+        });
+        res.end();
+    }
 })
 
 app.get('/getSchedule', auth, function (req, res) {
@@ -146,7 +159,9 @@ app.get('/getScore', auth, function (req, res) {
 app.get('/quitLogin', auth, async function (req, res) {
     console.log('服务器接收到了quitLogin请求')
     //删除数据库中有关该cookie的信息
-    await myUSmongo.del(req.Mycookie);
+    console.log('等待被删除的req.Mycookie', req.myCookie)
+    console.log('2222222222222222222')
+    await myUSmongo.del(req.myCookie);
     //重定向login页面
     res.writeHead(302, {
         'Location': '/login'

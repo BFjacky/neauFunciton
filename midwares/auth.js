@@ -12,6 +12,8 @@ module.exports = async function (req, res, next) {
         console.log('在中间件中找到了可用neauCookie！！！')
         req.neauCookie = flag[1];
         req.myCookie = 'feisweb=' + req.cookies.feisweb
+        console.log('1111111111111111111111')
+        req.flag = true;
         next();
     }
 
@@ -22,16 +24,8 @@ module.exports = async function (req, res, next) {
         res.cookie('feisweb', cookies[1])
         req.myCookie = 'feisweb=' + cookies[1];
         req.neauCookie = cookies[0];
+        req.flag = false;
         next();
-    }
-
-    else if (req.url !== '/login') {
-        console.log('没有找到了可用neauCookie！！！，重定向')
-        //重定向
-        res.writeHead(302, {
-            'Location': '/login'
-        });
-        res.end();
     }
 
 }
