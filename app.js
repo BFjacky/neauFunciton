@@ -11,9 +11,12 @@ const USmongo = require('./persistence/USmongo.js')
 const cookieParser = require('cookie-parser')
 const getNewCookie = require('./webServer/getNewCookie.js')
 const cookieIsAble = require('./webServer/CookieisAble.js')
+const auth = require('./midwares/auth.js')
+const midLogin = require('./midwares/midLogin')
+const midTryLogin = require('./midwares/midTryLogin.js')
+const myUSmongo = new USmongo()
 const app = express();
-//新建一个Student对象
-let stu = new Student();
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
@@ -23,35 +26,22 @@ app.get('/', function (req, res) {
     // res.cookie('feisweb',randomStr)
     res.send(req.cookies);
 })
-app.get('/login', async function (req, res) {
-    //用req.cookies来检查数据库
-    let flag = await cookieIsAble(req.cookies.feisweb)
-    //检查到了并且可用
-    if (flag[0] !== -1) {
-        stu.cookie = flag[1];
-        res.writeHead(302, {
-            'Location': '/main'
-        });
-        res.end();
-    }
-    
-    //无可用cookie，绑定新cookie   
-    let cookies = await getNewCookie()
-    res.cookie('feisweb', cookies[1])
-    stu.setCookie(cookies[0]);
-
-    fs.readFile(path.join(__dirname, 'public', '/html', '/login.html'), (err, data) => {
-        if (err) {
-            throw err
-        }
-        else {
-            res.end(data);
-        }
-    })
-})
+app.get('/login', midLogin,
+    async function (req, res) {
+        fs.readFile(path.join(__dirname, './', 'public', '/html', '/login.html'), (err, data) => {
+            console.log('33333333333333333333')
+            if (err) {
+                throw err
+            }
+            else {
+                res.end(data);
+            }
+        })
+    },
+)
 
 
-app.use('/tryLogin', function (req, res) {
+app.use('/tryLogin', midTryLogin, function (req, res) {
     let html = '';
 
     //获取提交的信息
@@ -62,11 +52,12 @@ app.use('/tryLogin', function (req, res) {
     req.on('end', () => {
         console.log('这里是表单数据', formdata);
         let obj = querystring.parse(formdata);
-
+        let stu = new Student();
         stu.stuId = obj.account;
         stu.password = obj.password;
         stu.captcha = obj.captcha;
-
+        stu.cookie = req.neauCookie;
+        console.log(stu)
         //判断提交的信息是否可用
         tryLogin(stu).then(
             function (data) {
@@ -106,7 +97,7 @@ app.get('/main', function (req, res) {
     })
 })
 
-app.get('/main/Sche_Score', function (req, res) {
+app.get('/main/Sche_Score', auth, function (req, res) {
     console.log('请求了index页面');
     let html = ''
     fs.readFile(path.join(__dirname, 'public', '/html', '/index.html'), (err, data) => {
@@ -122,9 +113,9 @@ app.get('/main/Sche_Score', function (req, res) {
     })
 })
 
-app.get('/getSchedule', function (req, res) {
+app.get('/getSchedule', auth, function (req, res) {
     console.log('服务器接收到了getSchedule 请求')
-    runGetSchedule(stu).then(function (data) {
+    runGetSchedule(req.neauCookie).then(function (data) {
         console.log('成功拿到课表数据');
         let StrData = JSON.stringify(data);
         res.writeHead(200, {
@@ -137,9 +128,9 @@ app.get('/getSchedule', function (req, res) {
     })
 })
 
-app.get('/getScore', function (req, res) {
+app.get('/getScore', auth, function (req, res) {
     console.log('服务器接收到了getscore 请求')
-    runGetScore(stu).then(function (data) {
+    runGetScore(req.neauCookie).then(function (data) {
         console.log('成功拿到成绩数据')
         let StrData = JSON.stringify(data);
         res.writeHead(200, {
@@ -152,6 +143,16 @@ app.get('/getScore', function (req, res) {
     });
 })
 
+app.get('/quitLogin', auth, async function (req, res) {
+    console.log('服务器接收到了quitLogin请求')
+    //删除数据库中有关该cookie的信息
+    await myUSmongo.del(req.Mycookie);
+    //重定向login页面
+    res.writeHead(302, {
+        'Location': '/login'
+    });
+    res.end();
+})
 app.listen(3000, function () {
     console.log('listening 3000...')
 })

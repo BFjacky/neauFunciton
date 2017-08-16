@@ -21,9 +21,9 @@ const options = {
 };
 
 //请求成绩页面的html 文件内容
-module.exports = function getScore(obj) {
+module.exports = function getScore(neauCookie) {
     let p = new Promise(function (resolve, reject) {
-        options.headers.Cookie = obj.cookie;
+        options.headers.Cookie =neauCookie;
         const req = http.request(options, (res) => {
             var chunks = [];
             let size = 0;

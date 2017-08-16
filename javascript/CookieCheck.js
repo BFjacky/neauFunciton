@@ -23,6 +23,7 @@ const options = {
 //请求成绩页面的html 文件内容
 module.exports = function cookieCheck(SchoolCookie) {
     let p = new Promise(function (resolve, reject) {
+        
         options.headers.Cookie = SchoolCookie;
         const req = http.request(options, (res) => {
             var chunks = [];
@@ -32,12 +33,14 @@ module.exports = function cookieCheck(SchoolCookie) {
                 size += chunk.length;
             });
             res.on('end', () => {
+                
                 data = new Buffer(size);
                 data = Buffer.concat(chunks, size);
                 //将获得的字符串解码成utf8
                 let decodeHtmlData = iconv.decode(data, 'gbk');
 
                 let flag = decodeHtmlData.indexOf('(两学期)" /></a>')
+                
                 resolve(flag)
 
             });
@@ -45,7 +48,7 @@ module.exports = function cookieCheck(SchoolCookie) {
 
         req.on('error', (e) => {
             console.error(`请求遇到问题: ${e.message}`);
-            reject(reason, 'nothing');
+            reject(reason);
         });
         req.end();
     })

@@ -19,10 +19,10 @@ const options = {
     }
 };
 
-module.exports =function runGetSchedule(obj) {
+module.exports =function runGetSchedule(neauCookie) {
     let p = new Promise(function (resolve, reject) {
         //请求Schedule html文件内容
-        options.headers.Cookie = obj.cookie;
+        options.headers.Cookie = neauCookie;
         const req = http.request(options, (res) => {
             var chunks = [];
             let size = 0;

@@ -12,7 +12,11 @@ module.exports = async function (req, res, next) {
         console.log('在中间件中找到了可用neauCookie！！！')
         req.neauCookie = flag[1];
         req.myCookie = 'feisweb=' + req.cookies.feisweb
-        next();
+        //定向为main页面
+        res.writeHead(302, {
+            'Location': '/main'
+        });
+        res.end();
     }
 
     //无可用cookie，绑定新cookie 
@@ -34,4 +38,4 @@ module.exports = async function (req, res, next) {
         res.end();
     }
 
-}
+}   

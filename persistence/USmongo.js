@@ -28,6 +28,7 @@ USmongo.prototype.insert = function (sessionId, neauSessionId) {
     return p;
 }
 USmongo.prototype.del = function (sessionId) {
+    console.log('执行了del操作')
     let p = new Promise(function (resolve, reject) {
         let whereStr = { sessionId: sessionId }
         userSession.remove(whereStr, function (err, res) {
