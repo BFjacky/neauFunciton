@@ -35,7 +35,6 @@ app.get('/login', auth,
         }
         else {
             fs.readFile(path.join(__dirname, './', 'public', '/html', '/login.html'), (err, data) => {
-                console.log('33333333333333333333')
                 if (err) {
                     throw err
                 }
@@ -55,15 +54,14 @@ app.use('/tryLogin', midTryLogin, function (req, res) {
     req.on('data', (chunk) => {
         formdata += chunk;
     })
-    req.on('end', () => {
-        console.log('这里是表单数据', formdata);
+    req.on('end', async() => {
         let obj = querystring.parse(formdata);
         let stu = new Student();
         stu.stuId = obj.account;
         stu.password = obj.password;
         stu.captcha = obj.captcha;
         stu.cookie = req.neauCookie;
-        console.log(stu)
+        await myUSmongo.update(req.myCookie,req.neauCookie,stu.stuId,stu.password)
         //判断提交的信息是否可用
         tryLogin(stu).then(
             function (data) {
@@ -91,7 +89,7 @@ app.get('/main', function (req, res) {
     console.log('请求了main页面');
     let html = ''
     fs.readFile(path.join(__dirname, 'public', '/html', '/main.html'), (err, data) => {
-        console.log('正在读取文件')
+    
         if (err) {
             throw err
         }
@@ -108,7 +106,7 @@ app.get('/main/Sche_Score', auth, function (req, res) {
         console.log('请求了index页面');
         let html = ''
         fs.readFile(path.join(__dirname, 'public', '/html', '/index.html'), (err, data) => {
-            console.log('正在读取文件')
+        
             if (err) {
                 throw err
             }
@@ -160,7 +158,6 @@ app.get('/quitLogin', auth, async function (req, res) {
     console.log('服务器接收到了quitLogin请求')
     //删除数据库中有关该cookie的信息
     console.log('等待被删除的req.Mycookie', req.myCookie)
-    console.log('2222222222222222222')
     await myUSmongo.del(req.myCookie);
     //重定向login页面
     res.writeHead(302, {

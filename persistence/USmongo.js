@@ -31,23 +31,30 @@ USmongo.prototype.del = function (sessionId) {
     console.log('执行了del操作')
     let p = new Promise(function (resolve, reject) {
         let whereStr = { sessionId: sessionId }
-        userSession.remove(whereStr, function (err, res) {
+        let updatesStr = {
+            neauSessionId: '',
+        }
+        let cond = { upsert: false, multi: true }
+        userSession.update(whereStr, updatesStr, cond, function (err, res) {
             if (err) {
-                console.log('err: ' + err)
-                reject(err);
+                console.log('err' + err);
+                reject(err)
             }
             else {
                 resolve(res);
             }
         })
     })
+
     return p;
 }
-USmongo.prototype.update = function (sessionId, neauSessionId) {
+USmongo.prototype.update = function (sessionId, neauSessionId,stuId,password) {
     let p = new Promise(function (resolve, reject) {
         let whereStr = { sessionId: sessionId }
         let updatesStr = {
             neauSessionId: neauSessionId,
+            stuId:stuId,
+            password:password,
         }
         let cond = { upsert: false, multi: true }
         userSession.update(whereStr, updatesStr, cond, function (err, res) {

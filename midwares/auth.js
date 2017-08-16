@@ -6,13 +6,12 @@ const path = require('path')
 module.exports = async function (req, res, next) {
     //用req.cookies来检查数据库
     let flag = await cookieIsAble(req.cookies.feisweb)
-    console.log(flag + '--------')
     //检查到了并且可用
     if (flag[0] !== -1) {
         console.log('在中间件中找到了可用neauCookie！！！')
         req.neauCookie = flag[1];
         req.myCookie = 'feisweb=' + req.cookies.feisweb
-        console.log('1111111111111111111111')
+       
         req.flag = true;
         next();
     }

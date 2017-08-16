@@ -7,8 +7,8 @@ const fs = require('fs');
 const path = require('path')
 module.exports = async function (req, res, next) {
     let myCookie = 'feisweb=' + req.cookies.feisweb;
-    console.log(myCookie)
     neauCookies = await myUSmongo.query(myCookie);
     req.neauCookie = neauCookies[0].neauSessionId;
+    req.myCookie = myCookie;
     next()
 }

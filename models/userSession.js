@@ -7,6 +7,8 @@ const userSession = new Schema(
     {
         sessionId:String,
         neauSessionId:String,
+        stuId:String,
+        password:String,
     },{
         timestamps:true,
         toJSON:{virtuals:true},
