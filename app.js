@@ -166,5 +166,5 @@ app.get('/quitLogin', auth, async function (req, res) {
     res.end();
 })
 app.listen(80, function () {
-    console.log('listening 3000...')
+    console.log('listening 80...')
 })
